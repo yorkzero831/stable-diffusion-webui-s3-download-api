@@ -26,7 +26,7 @@ class Api:
             model_dir = "Stable-diffusion"
             self.model_path = os.path.abspath(os.path.join(paths.models_path, model_dir))
 
-        print(self.model_path)
+        print(f's3 download api destination path: ${self.model_path}')
 
         if shared.cmd_opts.api_auth:
             self.credentials = {}
