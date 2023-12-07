@@ -80,9 +80,9 @@ class Api:
 
     def download_checkpoint(self, req: S3DownloadRequest):
         s3 = boto3.client('s3')
-        s3.download_file(req.bucket, req.prefix, f'${self.model_path}/${req.name}')
+        s3.download_file(req.bucket, req.prefix, f'{self.model_path}/{req.name}')
 
-        return S3DownloadResponse(result="")
+        return S3DownloadResponse(result=f'{self.model_path}/{req.name}')
 
 
 def on_app_started(_, app: FastAPI):
