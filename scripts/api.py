@@ -54,28 +54,19 @@ class Api:
 
         print("finish init s3 download api")
 
-    def auth(self, creds: Optional[HTTPBasicCredentials] = None):
-        if creds is None:
-            creds = Depends(HTTPBasic())
-        if creds.username in self.credentials:
-            if compare_digest(creds.password,
-                              self.credentials[creds.username]):
+    def auth(self, credentials: HTTPBasicCredentials = Depends(HTTPBasic())):
+        if credentials.username in self.credentials:
+            if compare_digest(credentials.password, self.credentials[credentials.username]):
                 return True
 
-        raise HTTPException(
-            status_code=401,
-            detail="Incorrect username or password",
-            headers={
-                "WWW-Authenticate": "Basic"
-            })
+        raise HTTPException(status_code=401, detail="Incorrect username or password", headers={"WWW-Authenticate": "Basic"})
 
-    def add_api_route(self, path: str, endpoint: Callable, **kwargs):
+    def add_api_route(self, path: str, endpoint, **kwargs):
         if self.prefix:
             path = f'{self.prefix}/{path}'
-
+            
         if shared.cmd_opts.api_auth:
-            return self.app.add_api_route(path, endpoint, dependencies=[
-                Depends(self.auth)], **kwargs)
+            return self.app.add_api_route(path, endpoint, dependencies=[Depends(self.auth)], **kwargs)
         return self.app.add_api_route(path, endpoint, **kwargs)
 
     def download_checkpoint(self, req: S3DownloadRequest):
