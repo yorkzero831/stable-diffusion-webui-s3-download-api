@@ -62,6 +62,9 @@ class Api:
         raise HTTPException(status_code=401, detail="Incorrect username or password", headers={"WWW-Authenticate": "Basic"})
 
     def add_api_route(self, path: str, endpoint, **kwargs):
+        if self.prefix:
+            path = f'{self.prefix}/{path}'
+            
         if shared.cmd_opts.api_auth:
             return self.app.add_api_route(path, endpoint, dependencies=[Depends(self.auth)], **kwargs)
         return self.app.add_api_route(path, endpoint, **kwargs)
